@@ -1,0 +1,16 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "7817222",
+      "name": "蓝牙连接",
+      "font_class": "lanyalianjie",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    }
+  ]
+}
