@@ -14,7 +14,7 @@
             :class="center_l_class == 0 ? 'center_l_class' : ''"
             @click="shoptype(0)"
             >未收货
-                <span class="tip">{{this.aa.length}}</span>
+                <span class="tip" v-if="this.aa.length > 0">{{this.aa.length}}</span>
             </span
           ><span
             :class="center_l_class == 1 ? 'center_l_class' : ''"
@@ -26,30 +26,32 @@
             <li class="center_l_ul" v-for="(item ,index) in bb"  :key="index"  v-bind:class="{active : activeindex === index ? 'active' : ''}" @click="orderSearch(item,index)">{{item.itemid.cnName}}</li>
         </ul>
       </div>
-      <div class="center_r">
+      <div class="center_r" v-if="this.tableData[0] && this.tableData.length > 0">
           <div class="center_r_1">
               <img v-if="!this.tableData[0].pictureUrl" src="../../assets/img/aec89a3cb114ffde370154f40caa824.png" alt="">
               <img v-if="this.tableData[0].pictureUrl" :src= this.tableData[0].pictureUrl alt="">
           </div>
           <div class="center_r_2">
-              <p>{{this.tableData[0].itemid.cnName}} （{{this.tableData[0].itemid.punit.name}}）</p>
-              <p>称重单位： {{this.value}} 斤</p>
+              <p style="width:32vw;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{this.tableData[0].itemid.cnName}} （{{this.tableData[0].itemid.punit.name}}）</p>
+              <p>称重单位：  &nbsp;&nbsp; 斤</p>
               <p>去皮重量： {{ this.quzhivalue}} 斤</p>
-              <p>500g <img src="../../assets/img/ba3901de851191d191f96a9f09e01ca.png" alt=""></p>
-              <p><van-stepper v-model="value" input-width="10vw" @plus="add" @minus="reduce" min="0"  button-size="60px"/></p>
+              <p>500g <img v-if="!this.suoding" src="../../assets/img/ba3901de851191d191f96a9f09e01ca.png" alt="">
+                      <img v-else src="../../assets/img/2c103f98acf019844e2291d0ba5d6d4.png" alt="">
+              </p>
+              <p><van-stepper v-model="value" :decimal-length="2" input-width="10vw" @plus="add" min="-999" @minus="reduce" button-size="40px"/></p>
               <span :class="ishorder ? 'aaa' : 'bbb'" style="display:inline-block;width:2vw;height:2vw;border-radius:50%;position:absolute;top:45%;left:15%;"></span>
           </div>
           <div class="center_r_3">
               <p><span>根茎</span><span @click="lookorder()">抽查</span></p>
               <p><span>单价</span><span>{{this.tableData[0].itemid.price}}</span></p>
               <p><span>订货</span><span>{{this.tableData[0].quantity}}（{{this.tableData[0].itemid.punit.name}}）</span></p>
-              <p><span>收货</span><span>{{this.tableData[0].quantityYes}} （{{this.tableData[0].itemid.punit.name}}）</span></span></p>
+              <p><span>收货</span><span>{{this.tableData[0].quantityYes}} （{{this.tableData[0].itemid.punit.name}}）</span></p>
           </div>
           <div class="center_r_4">
             <ul>
-              <li>去皮</li>
+              <li @click="handelPeel">去皮</li>
               <li @click="SkinValue">减皮值</li>
-              <li @click="RoundingPage">取整</li>
+              <li @click="RoundingPage">取整<br>{{this.roundingVal}}</li>
               <li>累加</li>
               <li @click="lackShop">缺货</li>
               <li>事件</li>
@@ -60,51 +62,82 @@
             </ul>
           </div>
       </div>
+      <div class="center_r" v-else style="text-align:center;"> 
+        暂无数据
+      </div>
     </div>
-    <div class="rightEn">
-      <ul>
-        <li>全部</li>
-        <li v-for="(value, index) in arrEn" :key="index">{{ value }}</li>
-      </ul>
-    </div>
-       <van-dialog class="log" v-model="show" title="入库抽查" confirmButtonColor="red" show-cancel-button width="35%" style="font-size:1.6vw;">
+         <van-dialog class="log" v-model="show" title="入库抽查" confirmButtonColor="red" show-cancel-button width="35%" style="font-size:1.6vw;">
           <div style="display:flex;height:16vw;flex-direction: column;margin:1vw 1vw;">
-            <p><span style="padding-right:2vw;">入库数量:</span> {{this.tableData[0].quantityYes}}（500g）</p>
-            <p style="margin-top:2vw;"><span style="padding-right:2vw;">抽查数量:</span><input type="text" v-model="params.checksQuantity"></p>
-            <p style="display:flex;margin-top:2vw;"><span style="padding-right:2vw;">合格数量:</span><input type="text" v-model="params.qualifiedQuantity"></p>
+            <p><span style="padding-right:2vw;">入库数量:</span> {{this.tableData[0] ? this.tableData[0].quantityYes : ''}}（500g）</p>
+            <p style="margin-top:2vw;"><span style="padding-right:2vw;">抽查数量:</span><input type="text" v-model="params.checksQuantity" style="border:0.5px solid rgb(192 192 192);"></p>
+            <p style="display:flex;margin-top:2vw;"><span style="padding-right:2vw;">合格数量:</span><input type="text" v-model="params.qualifiedQuantity" style="border:0.5px solid rgb(192 192 192);"></p>
           </div>
         </van-dialog>
 
-        <van-dialog @confirm="killvalue" class="log" v-model="isshow" title="去皮值" confirmButtonColor="red" show-cancel-button width="35%" style="font-size:1.6vw;">
-          <div style="display:flex;height:10vw;flex-direction: column;margin:1vw 1vw;align-items:center;">
-            <p style="display:flex;margin-top:3vw;"><span style="padding-right:1vw;">皮值:</span><input type="text" v-model="pival"></p>
+        <van-dialog @confirm="killvalue" class="log" v-model="isshow" title="去皮值" confirmButtonColor="red" show-cancel-button width="80%" style="font-size:1.6vw;">
+          <div>
+            <ul class="jianpizhiVal" style="display:flex;flex-wrap: wrap;">
+              <li @click="choosepeel(item,index,$event)" :class="[index == peelIndex ? 'chooseItem' : '']" style="background: rgb(232 97 96)" v-for="(item,index) in shopDes" :key="index">
+                <div>
+                  {{item.value}}
+                </div>  
+                <div class="jianpizhiVal-first">
+                  <span @click.stop="reduceVal(item,$event)" style="background:rgb(190 190 190)">-</span>
+                   {{item.count}}
+                  <span @click.stop="addVal(item,$event)" style="background:rgb(190 190 190)">+</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div style="display:flex;flex-direction: column;margin:1vw 1vw;">
+            <p style="display:flex;margin-top:3vw;justify-content:center;"><span style="padding-right:1vw;">皮值:</span><input type="text" style="border:0.5px solid rgb(192 192 192);width:43vw;" v-model="pival"></p>
           </div>
         </van-dialog>
+        <van-popup :style="{ height: '33%' , width: '40%' }"  v-model="setNumshow">
+           <ul>
+             <li v-for="(item,index) in setList" :key="index" @click="getchoose(item,index)"  @touchstart.stop="getTouchStart(item,index)" @touchend.stop="getTouchEnd(item,index)">
+               <div :class="[item.checked ? '' : 'chooseSet']">{{item.description}}</div>
+               <div>
+                   <p><img src="./../../assets/img/选中.png" v-if="item.chooseTypes"  alt=""></p>
+                   <p><img src="./../../assets/img/锁.png" alt="" v-if="item.suotype"  ></p>
+               </div>
+             </li>
+           </ul>
+        </van-popup>
         <set-alert v-if="this.$root.handelSetAlertType"></set-alert>
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant'
-import { Dialog } from 'vant'
+import { Dialog , Popup  } from 'vant'
 import {mapState ,mapGetters ,mapMutations , mapActions} from 'Vuex'
 export default {
   data() {
     return {
+      setNumshow:false,
+      shopDes:[],
       fatherText:'',
       pival:0.0,
       isshow:false,
       arrEn: [],
       center_l_class: 0,
-      value:0,
+      value:1.25,
       tableData:[],
       aa:[],
+      peelIndex:null,
       activeindex:0,
       bb:[],
       show:false,
       ishorder:true,
       Company:'',
       quzhivalue:0,
+      setList:[],
+      checked:true,
+      time:'',
+      setType:true,
+      setdirstType:null,
+      suoding:false,
       params:{
         checksQuantity:'',
         qualifiedQuantity:'',
@@ -120,23 +153,186 @@ export default {
   },
     computed: {
      ...mapState({
-       project: state => state.PROJECT.name
+       project: state => state.PROJECT.name,
+       BLUETOOTH_STATUS :state => state.BLUETOOTH_STATUS
      })
   },
   mounted() {
+    this.$root.handelSetAlertType = false
     window.androidvalMethods = this.androidvalMethods
     window.createImageBitmap = this.createImageBitmap
     this.arrEn = this.generateBig();
+    if (this.BLUETOOTH_STATUS != 'false') {
+         Toast('蓝牙已断开')
+    }
+    const localShop = JSON.parse(localStorage.getItem('SkinPlacement'))
+    this.roundingVal = JSON.parse(localStorage.getItem('roundingVal'))
+      if (localShop) {
+          this.shopDes = JSON.parse(localStorage.getItem('SkinPlacement'))
+    }
+    const setShop = JSON.parse(localStorage.getItem('set_rounding'))
+    if (setShop) {
+         this.setList = setShop.map((item) => {
+           if (item.suotype) {
+              if (item.type == 0) {
+              let floor = Math.floor(this.value*item.multiple) 
+              this.value = floor/item.multiple
+              
+              }else if (item.type == 1) {
+                  let round  = Math.round(this.value*item.multiple)
+                    this.value = round/item.multiple
+                
+              }else if (item.type == 2) {
+                let ceil  = Math.ceil(this.value*item.multiple)
+                this.value = ceil/item.multiple
+              }
+              this.suoding = true
+           }
+            return item
+         })
+    }
+      
+    const sure_type = JSON.parse(localStorage.getItem('sure_type'))
+         this.setType = sure_type
   },
   created () {
     this.initData()
+    const localShop = localStorage.getItem('sure_handel')
+    if (localShop) {
+      this.setindex = localShop
+      this.setdirstType = localShop
+    }
   },
   methods: {
+  	getTouchStart(item,index){
+		clearTimeout(this.time);
+		this.time = setTimeout(() => {
+      this.suoding = false
+      if (!item.checked) {return}
+          this.setList = this.setList.map((items,indexs) => {
+            items.chooseTypes = false
+            if (index == indexs) {
+              items.chooseTypes = true
+            }
+            if (index == indexs && !items.suotype) {
+              items.suotype = true
+              if (item.type == 0) {
+              let floor = Math.floor(this.value*item.multiple) 
+              this.value = floor/item.multiple
+                
+              }else if (item.type == 1) {
+              
+                  let round  = Math.round(this.value*item.multiple)
+                    this.value = round/item.multiple
+                
+              }else if (item.type == 2) {
+                let ceil  = Math.ceil(this.value*item.multiple)
+                    this.value = ceil/item.multiple
+              }
+              console.log(this.setList)
+              localStorage.setItem("set_rounding", JSON.stringify(this.setList))
+              this.roundingVal = item.description
+              localStorage.setItem("roundingVal", JSON.stringify(item.description))
+              this.suoding = true
+            }else{
+               items.suotype = false
+            }
+            return items
+         })
+    //     localStorage.setItem("sure_handel", this.setindex)
+    //     localStorage.setItem("sure_type", this.setType)
+    },2000);
+  },
+  getchoose (item,index) {
+    if (item.checked && !this.suoding) {
+      this.setNumshow = false
+      this.roundingVal = item.description
+      localStorage.removeItem("roundingVal")
+      this.setList = this.setList.map((items) => {
+         items.chooseTypes = false
+         return items
+      })
+      localStorage.setItem("set_rounding", JSON.stringify(this.setList))
+      item.chooseTypes = true
+    if (item.type == 0) {
+    let floor = Math.floor(this.value*item.multiple) 
+    this.value = floor/item.multiple
+      
+    }else if (item.type == 1) {
+    
+        let round  = Math.round(this.value*item.multiple)
+          this.value = round/item.multiple
+      
+    }else if (item.type == 2) {
+      let ceil  = Math.ceil(this.value*item.multiple)
+          this.value = ceil/item.multiple
+    }
+    }
+  },
+	getTouchEnd(item,index){
+		clearTimeout(this.time);
+	},
+    choosepeel (item,index,ev) {
+      if (ev.currentTarget.style.background == 'rgb(232, 97, 96)' || ev.currentTarget.style.background == ''){
+            ev.currentTarget.style.background = '#c84645'
+            item.count ++
+            this.pival += Number(item.value)
+      }else{
+            ev.currentTarget.style.background = 'rgb(232, 97, 96)'
+            item.count --
+            this.pival -= Number(item.value)
+      }
+
+    },
+    handelPeel () {
+      if (this.BLUETOOTH_STATUS != 'false') {
+          Toast('请先连接蓝牙设备')
+          return 
+      }
+      const tare = $presenter.tare()
+      if (tare == -1){
+        // this.quzhivalue += Number(this.value)
+          // Toast("当前版本没有返回值")
+      } else if (tare == 0){
+          // Toast("设备未连接")
+      }else if (tare == 1){
+          // this.quzhivalue += Number(this.value)
+          // Toast("去皮成功")
+      }else if (tare == 2){
+          // Toast("零点错误报警")
+      }else if (tare == 3){
+          // Toast("超过去皮范围")
+      }else if (tare == 4){
+          // Toast("有数字皮,不可去称重皮")
+      }else if (tare == 5){
+          // Toast("重量不稳定")
+      }
+      else if(tare == 0xff){
+          // Toast("超时")
+      }
+    },
     //称重
-    androidvalMethods (val,type) {
+    androidvalMethods (val,type,weight) {
+      if (this.Company != 43 || this.suoding) {
+        return
+      }
+      this.setList = this.setList.map((item) => {
+          if (item.type == 0) {
+          let floor = Math.floor(this.value*item.multiple) 
+          this.value = floor/item.multiple
+          }else if (item.type == 1) {
+              let round  = Math.round(this.value*item.multiple)
+                this.value = round/item.multiple
+          }else if (item.type == 2) {
+            let ceil  = Math.ceil(this.value*item.multiple)
+                this.value = ceil/item.multiple
+          }
+         return item
+      })
       this.value = val
+      this.quzhivalue = weight
       if (type === 'true') {
-      this.value = val 
+      this.value =  val
       this.ishorder = false
       }
       this.ishorder = true
@@ -150,12 +346,12 @@ export default {
     },
     createImageBitmap (url) {
        this.params.pictureUrl = url
-        this.params.quantityYes = this.tableData[0].quantityYes
+        this.params.quantityYes = this.value
         this.params.itemId = this.tableData[0].id
-        this.params.outOfStock = this.value
+        // this.params.outOfStock = this.value
         this.$API.configShop(this.params).then((res)=>{
           if (res.result === 'success') {
-            Toast('确认收货成功');
+            Toast('收货成功');
             this.initData()
           }
         })
@@ -175,18 +371,10 @@ export default {
        if (this.value >= this.tableData[0].quantity) {
          Dialog.confirm({
           title: '',
-          message: '确定按订户数量收货',
+          message: '确定按订货数量收货',
         })
           .then(() => {
-            this.params.quantityYes = this.tableData[0].quantityYes
-            this.params.itemId = this.tableData[0].id
-            this.params.outOfStock = this.value
-            this.$API.configShop(this.params).then((res)=>{
-              if (res.result === 'success') {
-                Toast('按照订单收货成功');
-                this.initData()
-              }
-            })
+            $photo.requestCamera()
           })
           .catch(() => {
             // on cancel
@@ -200,6 +388,10 @@ export default {
     },
     //皮值
     SkinValue () {
+      if (this.BLUETOOTH_STATUS != 'false') {
+          Toast('请先连接蓝牙设备')
+          return 
+      }
       this.isshow = true
     },
     lackShop () {
@@ -226,11 +418,44 @@ export default {
             this.bb = res.yshOrders
             this.tableData = res.yshOrders
           }
-         
        })
     },
+    reduceVal (item,ev) {
+    if (item.count > 0) {
+      item.count --
+      if (item.count == 0) {
+          ev.currentTarget.parentElement.parentElement.style.background = 'rgb(232, 97, 96)'
+      }
+      this.pival -= Number(item.value)
+    }
+    },
+    addVal (item,ev) {
+      item.count ++
+      if (item.count > 0) {
+          ev.currentTarget.parentElement.parentElement.style.background = 'rgb(200, 70, 69)'
+      }
+      this.pival += Number(item.value)
+    },
     killvalue () {
-      this.quzhivalue =  this.value - this.pival
+      const zp = $presenter.peel(this.pival)
+      // if (zp == 0){
+      //     Toast("设备未连接")
+      // }else if (zp == 1){
+      //     // this.quzhivalue =  this.value + this.pival
+      //     Toast("成功")
+      // }else if (zp == 2){
+      //     Toast("有称重皮存在,添加数字皮失败")
+      // }else if (zp == 3){
+      //     Toast("重量不稳定")
+      // }else if (zp == 4){
+      //     Toast("零点错误")
+      // }else if (zp == 5){
+      //     Toast("去皮超范围")
+      // } else if(zp == 0xff){
+      //     Toast("超时")
+      // }else if (zp == 0xee){
+      //     Toast("旧版本没有成功状态返回")
+      // }
     },
     initData () {
          this.$API.goodsDetails({id:this.$route.query.id}).then((res)=>{
@@ -258,9 +483,13 @@ export default {
     },
     //取整
     RoundingPage () {
-       this.$router.push({
+      if (this.setList.length > 0) {
+        this.setNumshow = true
+      }else{
+          this.$router.push({
          path:'/roundingSetting'
        })
+      }
     },
   }
 };
@@ -305,12 +534,12 @@ export default {
   margin-top: 2vh;
 }
 .center {
-  width: 97vw;
+  /* width: 97vw; */
   height: 92vh;
   margin-top: 2vh;
   overflow: hidden;
   background: #fff;
-  border-right: 4px solid #ccc;
+  /* border-right: 4px solid #ccc; */
 }
 .center_l {
   width: 20vw;
@@ -346,7 +575,7 @@ export default {
     display: block;
     position: absolute;
     top: 1.4vh;
-    right: 2.2vw;
+    right: 1.2vw;
     font-size:0.8vw;
 }
 .center_l ul{
@@ -374,7 +603,7 @@ export default {
     margin-left: 25%;
     margin-top: 4vh;
     overflow: hidden;
-    height: 66vh;
+    height: 85vh;
 }
 .center_r_1{
     width: 40%;
@@ -493,6 +722,7 @@ export default {
 .center_r_4 li{
   float: left;
   width: 33%;
+  text-align: center;
   height: 33.3%;
   display: flex;
   justify-content:center;
@@ -500,5 +730,74 @@ export default {
   color: #fff;
   border-bottom: 1px solid #fff;
   border-right: 1px solid #fff;
+}
+.chooseItem {
+  background: #c84645 !important;
+}
+.van-dialog .jianpizhiVal li{
+  position:relative;
+  width: 10vw;
+  height: 4vw;
+  text-align: center;
+  background: rgb(232 97 96) !important;
+  line-height: 4vw;
+  border-radius: 5%;
+  color: #fff;
+  margin: 2vw 3vw;
+}
+
+.van-dialog .jianpizhiVal li .jianpizhiVal-first{
+  display:flex;
+  color:#000;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+  bottom: -3.5vw;
+  align-items:center;
+}
+.van-dialog .jianpizhiVal li .jianpizhiVal-first span {
+   width:2vw;
+   height:2vw;
+   display:inline-block;
+   line-height:2vw;
+   background:rgb(190 190 190) !important;
+}
+.van-popup--center ul {
+  height: 100%;
+}
+.van-popup--center ul li{
+   width: 100%;
+   height: 4vw;
+   display: flex;
+   align-items: center;
+   border: 1px solid #ccc;
+   font-size: 1.5vw;
+   /* color: #999; */
+   /* background: red; */
+}
+.van-popup--center ul li div:first-child{
+  padding-left: 2vw;
+  width: 30%;;
+}
+.van-popup--center ul li div:last-child {
+  width: 60%;
+  display: flex;
+  text-align: center;
+  /* background: red; */
+  /* height: ; */
+  flex-direction: row-reverse;
+}
+.van-popup--center ul li div:last-child p{
+  /* background: green; */
+  width: 50%;
+}
+.van-popup--center ul li div:last-child p img{
+  width: 20%;
+}
+.chooseSet {
+  color: #ccc;
+}
+.van-popup--center ul li .selectSet{
+  display: none !important;
 }
 </style>

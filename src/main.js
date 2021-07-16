@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-21 14:04:49
- * @LastEditTime: 2021-07-09 11:02:21
+ * @LastEditTime: 2021-07-13 11:41:13
  * @LastEditors: g05047
  * @Description: In User Settings Edit
  * @FilePath: \SCM_PUB\src\main.js
@@ -52,7 +52,7 @@ Vue.prototype.$API = API
 new Vue({
   data () {
     return {
-      handelSetAlertType:true
+      handelSetAlertType:false
     }
   },
   el: '#app',

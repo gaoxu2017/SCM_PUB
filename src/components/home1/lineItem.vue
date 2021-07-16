@@ -47,12 +47,12 @@
             </li>
         </ol>
     </div>
-    <div class="rightEn">
+    <!-- <div class="rightEn">
       <ul>
         <li>全部</li>
         <li v-for="(value, index) in arrEn" :key="index">{{ value }}</li>
       </ul>
-    </div>
+    </div> -->
 
     <div class="examine" v-if="this.$route.query.from || this.$route.query.from === 'no'" @click="handelExamine()">
        <img src="../../assets/img/a8420be7eea9fc9ee8023b762862e35.png" alt="">
@@ -89,6 +89,7 @@ export default {
     this.initData()
   },
   mounted() {
+    this.$root.handelSetAlertType = false
     this.arrEn = this.generateBig();
     this.aa = Number(this.$route.query.da)
   },
@@ -202,11 +203,11 @@ export default {
   margin-top: 2vh;
 }
 .center{
-    width: 95vw;
+    /* width: 95vw; */
     height: 92vh;
     margin-top: 2vh;
     background: #fff;
-    border-right: 4px solid #ccc;
+    /* border-right: 4px solid #ccc; */
 }
 .center p{
     height: 6vh;
@@ -235,7 +236,7 @@ export default {
 .center ul li span{
     display: block;
     float: left;
-    width: 12%;
+    width: 12.2%;
     text-align: center;
     border-left: 1px solid #ccc;
 }
@@ -261,7 +262,7 @@ export default {
 .center ol li span{
     display: block;
     float: left;
-    width: 12%;
+    width: 12.2%;
     text-align: center;
     border-left: 1px solid #ccc;
 }

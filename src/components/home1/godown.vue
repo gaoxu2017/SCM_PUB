@@ -14,17 +14,25 @@
             placeholder="请选择日期">
           </el-date-picker>
         </div>
-        <span style="margin: 0vw 2vw 0 6vw;">库房:</span>
-        <el-dropdown @command="handleCommand"> 
-          <span class="el-dropdown-link">
+        <span style="margin: 0vw 2vw 0vw 0vw;font-size:1.4vw;">库房:</span>
+        <!-- <el-dropdown @command="handleCommand">  -->
+            <el-select v-model="params.warehouseId" @change="handleCommand" placeholder="请选择">
+              <el-option
+                v-for="item in storageRoom.warehouseList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          <!-- <span class="el-dropdown-link">
             库房查询
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item v-for="(item,index) in storageRoom.warehouseList" :command="item" :key="index">{{item.name}}</el-dropdown-item>
 
           </el-dropdown-menu>
-        </el-dropdown>
-        <van-button color="#c84645" @click="goodsReceving">按货品收货</van-button>
+        </el-dropdown> -->
+        <van-button color="#c84645" size="mini"  @click="goodsReceving">按货品收货</van-button>
         <img src="../../assets/img/02.png" alt="">
       </div>
 
@@ -85,7 +93,7 @@ export default {
        enterpriseOrder:[],
        enterpriseOrderList:[],
        value4: '',
-       companyname:null,
+       companyname:0,
        bottom_r_class:0,
        shoptype:true,
        enterpriseName:[],
@@ -105,6 +113,7 @@ export default {
      })
   },
   created () {
+     this.$root.handelSetAlertType = false
      this.params.compomentId = this.$route.query.id
      this.params.deliverDate = this.getCurrentTime()
      this.initData()
@@ -133,6 +142,8 @@ export default {
     */
    //时间筛选
    changeTime () {
+     this.params.supplierId = ''
+     this.params.warehouseId = ''
      this.initData()
    },
    doThis (item) {
@@ -157,7 +168,7 @@ export default {
      })
    },
    handleCommand (item) {
-     this.params.warehouseId = item.id
+    //  this.params.warehouseId = item.id
      this.initData(1)
    },
     enterpriseOrders (item,index) {
@@ -171,6 +182,8 @@ export default {
          if (type !== 1) {
           this.enterpriseName = res
           this.storageRoom = res
+          //this.storageRoom.warehouseList[0] ? this.storageRoom.warehouseList[0].id  : ''
+          this.params.warehouseId = this.storageRoom.warehouseList[0] ? this.storageRoom.warehouseList[0].id  : ''
          }
          this.handelData()
       })
@@ -189,9 +202,6 @@ export default {
             for(let x = 0; x < this.enterpriseOrder.supplierList[0].shzOrders.length;x++) {
               this.enterpriseOrderList.push(this.enterpriseOrder.supplierList[0].shzOrders[x])
            }
-           console.log(this.enterpriseOrderList.length)
-            // this.shoptype = false
-          //   this.enterpriseOrderList = []
           }
           if (this.enterpriseOrderList.length > 0){
             this.shoptype = true
@@ -210,7 +220,9 @@ export default {
          
     },
     bottom_r_classs (num) {
+      // this.enterpriseOrderList = []
        if (num === 1) { 
+        // this.enterpriseOrderList = []
         this.bottom_r_class = 1
         for (let i = 0; i < this.enterpriseOrder.supplierList.length;i++) {
           if (this.enterpriseOrder.supplierList[i].shzOrders.length > 0) {
@@ -218,6 +230,7 @@ export default {
            for(let x = 0; x < this.enterpriseOrder.supplierList[i].shzOrders.length;x++) {
               this.enterpriseOrderList.push(this.enterpriseOrder.supplierList[i].shzOrders[x])
            }
+           return 
           }else{
             this.shoptype = false
             this.enterpriseOrderList = []
@@ -233,6 +246,9 @@ export default {
 </script>
 
 <style scoped>
+.box {
+  overflow: hidden;
+}
 .top{
   width: 100%;
   height: 6vh;
@@ -330,7 +346,7 @@ export default {
     color: #fff;
     text-align: center;
     position: absolute;
-    top: 2vh;
+    top: 1vh;
     right: 2vw;
     border-radius: 50%;     
 }
@@ -425,13 +441,25 @@ export default {
 }
 .block /deep/ .el-input--prefix .el-input__inner{
   /* background: red; */
-  width: 60%;
-  height: 2vw;;
+  width: 48%;
+  height: 2.5vw;
+  font-size: 0.5vw;
 }
 .block /deep/  .el-input__prefix, .el-input__suffix{
-  top: -1.4vw;
+  top: -1.2vw;
+  font-size: 0.3vw;
 }
 .activecompany {
-  background: #ccc;
+  background: rgb(184, 181, 181);
+}
+.el-select >>> .el-input--suffix .el-input__inner{
+    height: 2.5vw;
+    /* width: 65%; */
+    font-size:0.5vw;
+    /* background: red; */
+}
+.el-select >>> .el-input--suffix .el-input__suffix {
+  top: 1.2vw;
+  font-size: 0.5vw;
 }
 </style>

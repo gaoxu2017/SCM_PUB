@@ -169,11 +169,12 @@ p>span:nth-child(2){
 }
 .bottomImg{
   width: 100%;
-  margin-top: 4vh;
+  margin-top: 5vh;
   display: flex;
   justify-content:center;;
 }
 .bottomImg img{
-  width: 4vw;
+  width: 5%;
+  height: 3%;
 }
 </style>

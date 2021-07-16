@@ -172,7 +172,9 @@ const router = new Router({
   ]
 })
 //默认所有设置弹框状态
-router.afterEach((to,form) => {
-  this.a.app.$root.handelSetAlertType = false
-})
+// router.afterEach((to,form) => {
+  // console.log(this)
+  // alert(123)
+  // this.$root.handelSetAlertType = false
+// })
 export default router

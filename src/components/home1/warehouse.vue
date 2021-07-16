@@ -1,7 +1,7 @@
 <template>
   <div class="box">
       <!-- <div class="top"><van-icon @click="back" name="arrow-left" size="3vh"/>{{project}} <img src="../../assets/img/蓝牙.png" alt=""><img src="../../assets/img/设置.png" alt=""></div> -->
-      <header-wrapper ></header-wrapper>
+      <header-wrapper :fatherText="project"></header-wrapper>
       <div class="center">
         <span style="margin: 0vw 1vw;font-size:1.4vw;">到货日期:</span>
         <div class="block">
@@ -14,7 +14,7 @@
             placeholder="请选择日期">
           </el-date-picker>
         </div>
-        <span style="margin: 0vw 2vw 0 6vw;">库房:</span>
+        <span style="margin: 0vw 2vw 0 1vw;">库房:</span>
             <el-select v-model="params.warehouseId" @change="handleCommand" placeholder="请选择">
               <el-option
                 v-for="item in storageRoom.warehouseList"
@@ -111,6 +111,7 @@ export default {
      })
   },
   created () {
+     this.$root.handelSetAlertType = false
      this.params.compomentId = this.$route.query.id
      this.params.deliverDate = this.getCurrentTime()
      this.initData()
@@ -166,7 +167,7 @@ export default {
      })
    },
    handleCommand (item) {
-     this.params.warehouseId = item.id
+    //  this.params.warehouseId = item.id
      this.initData(1)
    },
     enterpriseOrders (item,index) {
@@ -183,7 +184,7 @@ export default {
          if (type !== 1) {
           this.enterpriseName = res
           this.storageRoom = res
-          this.params.warehouseId =  res.warehouseList[0].id
+          this.params.warehouseId ? res.warehouseList[0].id : ''
          }
          this.handelData()
         }
@@ -441,5 +442,28 @@ export default {
 }
 .activecompany {
   background: #ccc;
+}
+.block /deep/ .el-input--prefix .el-input__inner{
+  /* background: red; */
+  width: 48%;
+  height: 2.5vw;
+  font-size: 0.5vw;
+}
+.block /deep/  .el-input__prefix, .el-input__suffix{
+  top: -1.2vw;
+  font-size: 0.3vw;
+}
+.activecompany {
+  background: rgb(184, 181, 181);
+}
+.el-select >>> .el-input--suffix .el-input__inner{
+    height: 2.5vw;
+    /* width: 65%; */
+    font-size:0.5vw;
+    /* background: red; */
+}
+.el-select >>> .el-input--suffix .el-input__suffix {
+  top: 1.2vw;
+  font-size: 0.5vw;
 }
 </style>

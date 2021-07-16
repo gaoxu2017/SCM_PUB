@@ -2,26 +2,27 @@
  * @Author: gaoxu
  * @Date: 2021-07-08 10:23:28
  * @LastEditors: g05047
- * @LastEditTime: 2021-07-09 14:12:22
+ * @LastEditTime: 2021-07-13 20:16:51
  * @Description: file content
 -->
 <template>
     <div class="header-wrapper">
-        <div class="top"><van-icon @click="back" name="arrow-left" size="3vh"/>{{fatherText}} <i class="iconfont icon-lanyalianjie"></i><img @click="setlanya()" src="../assets/img/设置.png" alt=""></div>
+        <div class="top"><van-icon @click="back" name="arrow-left" size="3vh"/>{{fatherText}} <i :class=" BLUETOOTH_STATUS == 'false' ? 'iconfont icon-lanyalianjie' : 'iconfont icon-lanyalianjie duankai'"></i><img @click="setlanya()" src="../assets/img/设置.png" alt=""></div>
     </div>
 </template>
 
 <script>
+import {mapState ,mapGetters ,mapMutations , mapActions} from 'Vuex'
 export default {
     props:{
        fatherText :{
           type: String,
           default: null
-       },
-      //  isshowblack:{
-      //    type: Boolean
-      //  }
+       }
     },
+  computed: {
+    ...mapState(['BLUETOOTH_STATUS']),
+  },
     data () {
         return {
 
@@ -62,10 +63,13 @@ export default {
 }
 .top .iconfont  {
   position: absolute;
-  top: 0.1vw;
+  top: 0.2vw;
   right: 10vh;
-  opacity: 0.8;
+  /* opacity: 0.9; */
   font-size: 1.9vw;
+}
+.duankai{
+  opacity: 0.2;
 }
 /* .top i:nth-child(1){
   right: 8vh;

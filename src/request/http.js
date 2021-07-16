@@ -8,7 +8,7 @@ import {
 if (process.env.NODE_ENV == 'development') {
   //开发环境
   //http://192.168.8.100:8080/scm
-  axios.defaults.baseURL = 'http://192.168.8.104:8080/scm'
+  axios.defaults.baseURL = 'http://192.168.8.101:8080/scm'
 } else if (process.env.NODE_ENV == 'debug') {
   // 测试
   axios.defaults.baseURL = '';

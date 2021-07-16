@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2021-06-24 10:42:19
- * @LastEditTime: 2021-07-07 14:05:51
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2021-07-15 11:21:11
+ * @LastEditors: g05047
  * @Description: In User Settings Edit
  * @FilePath: \SCM_PUB\src\request\api.js
  */
@@ -59,4 +59,9 @@ export const goodsOrdderDetails = params => post('app/api/instore/confirmCount2'
 审核
 */
 export const examineIndex = params => post('/app/api/checkOrders/createInstore', params)
+
+/*
+取整设置
+*/
+export const settingRounding  = params => post('/app/api/round/getRoundList', params)
 

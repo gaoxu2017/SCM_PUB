@@ -2,13 +2,13 @@
  * @Author: gaoxu
  * @Date: 2021-06-21 14:04:49
  * @LastEditors: g05047
- * @LastEditTime: 2021-07-09 10:03:26
+ * @LastEditTime: 2021-07-13 19:38:00
  * @Description: file content
 -->
 <template>
   <div>
     <!-- <header-wrapper :fatherMethods="fatherMethods" :isshowblack="isshowblack"></header-wrapper> -->
-    <div class="top">爱玛客智能秤平台 <i class="iconfont icon-lanyalianjie"></i><img @click="setlanya" src="../assets/img/设置.png" alt=""></div>
+    <div class="top">爱玛客智能秤平台<i :class="BLUETOOTH_STATUS == 'false' ? 'iconfont icon-lanyalianjie lianjie' : 'iconfont icon-lanyalianjie duankai'"></i><img @click="setlanya" src="../assets/img/设置.png" alt=""></div>
     <ul class="nav">
       <li v-for="(value,index) in arr" :key="index" @click="haldelList(value)">
         <img :src="value.icon" alt="">
@@ -20,6 +20,8 @@
 </template>
 
 <script>  
+import {mapState ,mapGetters ,mapMutations , mapActions} from 'Vuex'
+import { searchProject } from "@/request/api";
 export default {
   data(){
     return{
@@ -36,24 +38,47 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapState(['BLUETOOTH_STATUS']),
+  },
   methods: {
     //父组件方法
     fatherMethods () {
        this.show = !this.show
     },
+    allData (val) {
+       searchProject().then((res)=>{
+          const { componentList } = res
+          if (componentList.length <= 1 && val === '采购入库') {
+                this.$router.push({
+                  path:'/godown',
+                  query:{
+                    id:componentList[0].id
+                  }
+            })
+          }else{
+              this.$router.push({
+                path:'/warehouse',
+                query:{
+                  id:componentList[0].id
+                }
+              })
+          }
+          this.$store.dispatch('asyncaddProject',componentList[0])
+       })
+    },
     haldelList (item) {
       if (item.value === '采购入库') {
-        this.$router.push({
-        path:'/option'
-      })
+        this.allData(item.value)
       }
       if (item.value === '入库验收') {
-        this.$router.push({
-        path:'/option',
-        query:{
-          id:1
-        }
-      })
+        this.allData(item.value)
+      //   this.$router.push({
+      //   path:'/option',
+      //   query:{
+      //     id:1
+      //   }
+      // })
       }
     },
     setlanya () {
@@ -90,8 +115,14 @@ export default {
   position: absolute;
   top: 0.1vw;
   right: 10vh;
-  opacity: 0.8;
+  /* opacity: 0.9; */
   font-size: 1.9vw;
+}
+.duankai {
+  opacity: 0.2;
+}
+.lianjie {
+  opacity: 1;
 }
 .top img:nth-child(2){
   right: 3vh;

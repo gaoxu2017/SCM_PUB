@@ -12,7 +12,7 @@
       />
     </div> -->
     <div class="center">
-        <span style="margin: 0vw 2vw 0 6vw;">供应商:</span>
+        <span style="margin: 0vw 2vw 0 1vw;font-size:1.4vw;">供应商:</span>
             <el-select v-model="supplier" @change="changeSupplier(supplier)" placeholder="请选择">
               <el-option
                 v-for="item in supplierList"
@@ -42,7 +42,7 @@
           </el-date-picker>
         </div>
 
-      <span @click="search()" style="position:absolute;right:2.4vw;"> <img src="../../assets/img/02.png" alt="" /></span>
+      <!-- <span @click="search()" style="position:absolute;right:2.4vw;"> <img src="../../assets/img/02.png" alt="" /></span> -->
     </div>
     <div class="bottom">
       <p><span style="background: rgb(91, 193, 4)" @click="Receiving(2)"></span>收货中</p>
@@ -86,7 +86,7 @@ export default {
       searchCondition: {},
       itemsList: [],
       supplierList:[],
-      supplier:[],
+      supplier:'',
       data:{},
     };
   },
@@ -97,6 +97,7 @@ export default {
      })
   },
   mounted() {
+    this.$root.handelSetAlertType = false
     this.arrEn = this.generateBig();
     this.getSupplierItems();
   },
@@ -124,7 +125,11 @@ export default {
          this.data=res
          this.itemsList = res.itemsList;
          this.supplierList=res.supplierList;
-      });
+         this.supplier = res.supplierList[0].id ? res.supplierList[0].id : ''
+        //  console.log(res.supplierList[0].id)
+        //  console.log(this.supplierList)
+        //  alert(res.supplierList[0].id)
+      })
     },
     generateBig() {
       let ch_big = "A";
@@ -143,7 +148,8 @@ export default {
          this.data=res
          this.itemsList = res.itemsList;
          this.supplierList=res.supplierList;
-         this.supplier = res.supplierList[0].id
+        //  alert(res.supplierList[0].id)
+         this.supplier = res.supplierList[0].id ? res.supplierList[0].id : ''
       });
     },
     Receiving (type) {
@@ -155,7 +161,7 @@ export default {
             });
     },
     changeSupplier(value){
-      debugger
+      // debugger
       this.supplier=value
       console.log(this.supplier)
       this.itemsList=this.data.itemsList.filter(val=>val.supplierId==value.id)
@@ -234,7 +240,7 @@ export default {
   position: relative;
   overflow: hidden;
 }
-.bottom span {
+.bottom p span {
   width: 1vw;
   height: 1vw;
   margin-right: 1vw;
@@ -280,22 +286,26 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 0;
-  right: 0;
+  top: 1px;
+  right: 1px;
+  border-radius: 0px 0.5vw 0px 0px;
   background: #fff;
   color: #ccc;
   margin-right: 0;
 }
 .bottom ul li span:nth-child(2) {
   display: block;
-  width: 100%;
+  width: 13vw;
   font-size: 1.3vw;
   left: 2vw;
-  top: 1vh;
+  top: 1.1vh;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .bottom ul li span:nth-child(3) {
   left: 2vw;
-  top: 3.2vh;
+  bottom: 1vw;
 }
 .receivingStatus_0 {
   background-color: rgb(74, 137, 254);
@@ -305,5 +315,28 @@ export default {
 }
 .receivingStatus_2 {
   background-color: rgb(91, 193, 4);
+}
+.block /deep/ .el-input--prefix .el-input__inner{
+  /* background: red; */
+  width: 48%;
+  height: 2.5vw;
+  font-size: 0.5vw;
+}
+.block /deep/  .el-input__prefix, .el-input__suffix{
+  top: -1.2vw;
+  font-size: 0.3vw;
+}
+.activecompany {
+  background: rgb(184, 181, 181);
+}
+.el-select >>> .el-input--suffix .el-input__inner{
+    height: 2.5vw;
+    /* width: 65%; */
+    font-size:0.5vw;
+    /* background: red; */
+}
+.el-select >>> .el-input--suffix .el-input__suffix {
+  top: 1.2vw;
+  font-size: 0.5vw;
 }
 </style>

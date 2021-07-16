@@ -2,7 +2,7 @@
  * @Author: gaoxu
  * @Date: 2021-06-21 14:05:26
  * @LastEditors: g05047
- * @LastEditTime: 2021-07-12 10:02:58
+ * @LastEditTime: 2021-07-15 09:45:52
  * @Description: file content
  */
 
@@ -48,7 +48,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: '192.168.8.106', // can be overwritten by process.env.HOST
+    host: '192.168.8.100', // can be overwritten by process.env.HOST   192.168.8.106
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,
     errorOverlay: true,
