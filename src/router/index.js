@@ -169,6 +169,12 @@ const router = new Router({
         name: 'bindingDevice',
         component: () => import('@/components/home1/bindingDevice')
       },
+      //  累加
+      {
+        path: '/accumulation',
+        name: 'accumulation',
+        component: () => import('@/components/home1/accumulation')
+      }
   ]
 })
 //默认所有设置弹框状态

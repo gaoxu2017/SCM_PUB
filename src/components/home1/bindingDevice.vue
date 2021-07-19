@@ -22,8 +22,8 @@
 
     <div class="nav">
       <van-loading v-if="loadingtype" type="spinner" size="10vw" style="text-align:center;margin-top:10%;width:100%;opacity:0.5;position:fixed;" color="#c84645" />
-      <ul>
-          <li :class="item.status == 1 ? 'ischoose' : ''" v-for="(item ,index) in bluetoothArr" :key="index" v-if="bluetoothArr.length > 0" @click.stop="androidItem(item)">
+      <ul v-if="bluetoothArr.length > 0">
+          <li :class="item.status == 1 ? 'ischoose' : ''" v-for="(item ,index) in bluetoothArr" :key="index"  @click.stop="androidItem(item)">
              <p>{{item.name}}</p>
              <p>{{item.status == 1 ? '已绑定' : '未绑定'}}</p>
           </li>
@@ -74,10 +74,20 @@ export default {
           this.$router.go(-1)
         },
         androidMethods (value,value2) {
+            let flag=false;
             let obj = {}
             obj.name = value
             obj.status = value2
+            this.bluetoothArr.map((item,index)=>{
+                if(item.name==value){
+                    this.bluetoothArr[index].status=value2
+                    flag=true;
+                    return
+                }
+            });
+            if(!flag){
             this.bluetoothArr.push(obj)
+            }
         },
         initBluetooth () {
             $presenter.search()

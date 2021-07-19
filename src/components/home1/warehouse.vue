@@ -61,8 +61,8 @@
               <span>到货日期</span>
               <span>操作</span>
             </p>
-            <ol>
-              <li v-on:click.stop="doThis(item)" v-for ="(item,index) in enterpriseOrderList" v-if="shoptype" :key="index">
+            <ol  v-if="shoptype">
+              <li v-on:click.stop="doThis(item)" v-for ="(item,index) in enterpriseOrderList"  :key="index">
                  <span>{{index+1}}
                 </span>
                 <span class="order-num">{{item.code}}</span>
@@ -71,10 +71,10 @@
                 <span>{{item.deliverDate | dateFormat}}</span>
                 <span ><img src="../../assets/img/01.png" alt=""></span>
               </li>
-              <div style="text-align:Center;" v-if="!shoptype">
+            </ol>
+            <div style="text-align:Center;" v-if="!shoptype">
                 暂无数据
               </div>
-            </ol>
           </div>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default {
     */
    //时间筛选
    changeTime () {
-     this.initData(1)
+     this.initData(0)
    },
    doThis (item) {
       this.$router.push({
@@ -179,9 +179,8 @@ export default {
       this.$API.warehousingAcceptance(this.params).then((res)=>{
         const { result } = res
         if (result === 'success') {
-          
          this.enterpriseOrder = res
-         if (type !== 1) {
+         if (type != 1) {
           this.enterpriseName = res
           this.storageRoom = res
           this.params.warehouseId ? res.warehouseList[0].id : ''
